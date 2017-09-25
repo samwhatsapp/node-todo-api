@@ -17,9 +17,9 @@ const todos = [{
 
 beforeEach((done)=>{
 	Todo.remove({}).then(()=>{
-		Todo.insertMany(todos).then(()=>{
+		return Todo.insertMany(todos);
+	}).then(()=>{
 		done();
-	});
 	})
 })
 
@@ -108,12 +108,37 @@ describe('SERVER',()=>{
 
 		});
 
+	})
 
+	describe('DELETE /todos/:id',()=>{
+
+		it('should delete a todo by id',(done)=>{
+			request(app)
+				.delete(`/todos/${todos[0]._id}`)
+				.expect(200)
+				.expect((res)=>{
+					expect(res.body.todo).to.be.an('object').that.has.property('text').to.be.equal('Test todos 1');
+				})
+				.end(done);
+
+		})
+	})
+
+	describe('PATCH /todos/:id',()=>{
+		it('should update a Todo',(done)=>{
+			request(app)
+				.patch(`/todos/${todos[0]._id}`)
+				.send({text:'Updated Text'})
+				.expect(200)
+				.expect((res)=>{
+					expect(res.body.todo).to.be.an('object').that.has.property('text').to.be.equal('Updated Text');
+				})
+				.end(done);
+		})
 
 
 	})
 
 
-
-
 })
+
